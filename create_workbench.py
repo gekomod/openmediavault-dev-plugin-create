@@ -86,10 +86,10 @@ def create_component(file_type: str, plugin_name: str, properties: Dict[str, Any
         "version": "1.0",
         "type": "route",
         "data": {
-          "url": "/network/dnshost",
+          "url": f"/{file_type}/{plugin_name}",
           "title": f'_("{plugin_name} Example")',
           "editing": True,
-          "notificationTitle": _("Example Notification in file Route.d"),
+          "notificationTitle": f'_("Example Notification in file Route.d")',
           "component": f"omv-{file_type}-{plugin_name}-index-form-page"
         }
     }
