@@ -2,3 +2,5 @@
 /__pycache__
 /openmediavault-myplugins
 starykod.py
+/build
+generate_plugin.spec
