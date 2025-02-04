@@ -61,6 +61,15 @@ def create_component(file_type: str, plugin_name: str, properties: Dict[str, Any
         }
     }
 
+    component_navigation_data = {
+        "version": "1.0",
+        "type": "component",
+        "data": {
+          "name": f"omv-{file_type}-{plugin_name}-navigation-page",
+          "type": "navigationPage"
+        }
+    }
+
     # Dodaj pola z właściwości JSON
     for field_name, props in properties.items():
         field_config = {
@@ -75,8 +84,11 @@ def create_component(file_type: str, plugin_name: str, properties: Dict[str, Any
 
     # Zapis pliku komponentu
     component_filename = f"{dirs(plugin_name)}/workbench/component.d/omv-{file_type}-{plugin_name}-index-form-page.yaml"
+    component_navigation_filename = f"{dirs(plugin_name)}/workbench/component.d/omv-{file_type}-{plugin_name}-navigation-page.yaml"
     with open(component_filename, 'w') as f:
         yaml.dump(component_data, f)
+    with open(component_navigation_filename, 'w') as f:
+        yaml.dump(component_navigation_data, f)
     
     print(f"Utworzono plik komponentu: {component_filename}")
 
