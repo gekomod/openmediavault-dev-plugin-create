@@ -2,6 +2,7 @@ import os
 import argparse
 from debian_changelog_generator import *
 import create_workbench
+import create_binary_debian
 from datetime import datetime
 
 # Domyślne treści plików
@@ -9,8 +10,7 @@ DEBIAN_CHANGELOG = """openmediavault-PLUGINNAME (1.0.0) stable; urgency=low
 
   * Initial release.
 
- -- OpenMediaVault Plugin Generator  {date}
-"""
+ -- OpenMediaVault Plugin Generator <EMAIL@localhost>  {date}-0600"""
 
 DEBIAN_COMPAT = "13"
 
@@ -19,15 +19,14 @@ Section: FILETYPE
 XB-Plugin-Section: FILETYPE
 Priority: optional
 Maintainer: OpenMediaVault Plugin Generator
-Build-Depends: debhelper (>= 11)
+Build-Depends: debhelper (>= 11), debhelper-compat (= 13)
 Standards-Version: 4.5.0
 Homepage: https://github.com/gekomod/
 
 Package: openmediavault-PLUGINNAME
 Architecture: all
 Depends: openmediavault (>= 7)
-Description: DESCRIPTION_PLUGINNAME.
-"""
+Description: DESCRIPTION_PLUGINNAME."""
 
 DEBIAN_COPYRIGHT = """Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
@@ -36,8 +35,7 @@ Copyright: 2024 OpenMediaVault Plugin Generator
 License: GPL-3+
 
 License: GPL-3+
- /usr/share/common-licenses/GPL-3
-"""
+ /usr/share/common-licenses/GPL-3"""
 
 DEBIAN_INSTALL = "usr/* usr"
 
@@ -333,15 +331,15 @@ def create_plugin(plugin_name, filetype, config_options):
     os.makedirs(plugin_dir, exist_ok=True)
 
     # Struktura katalogów DEBIAN
-    debian_dir = os.path.join(plugin_dir, "DEBIAN")
+    debian_dir = os.path.join(plugin_dir, "debian")
     os.makedirs(debian_dir, exist_ok=True)
 
     # Tworzenie plików DEBIAN
     with open(os.path.join(debian_dir, "changelog"), "w") as f:
         f.write(DEBIAN_CHANGELOG.replace("PLUGINNAME", plugin_name).replace("{date}", datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")))
 
-    with open(os.path.join(debian_dir, "compat"), "w") as f:
-        f.write(DEBIAN_COMPAT)
+    #with open(os.path.join(debian_dir, "compat"), "w") as f:
+    #    f.write(DEBIAN_COMPAT)
 
     with open(os.path.join(debian_dir, "control"), "w") as f:
         f.write(DEBIAN_CONTROL.replace("PLUGINNAME", plugin_name).replace("FILETYPE", filetype))
@@ -447,7 +445,11 @@ if __name__ == "__main__":
     changelog_parser.add_argument("plugin_name", help="Nazwa pluginu (np. myplugin).")
 
     # Komenda gen changelog
-    changelog_parser = subparsers.add_parser("changelog", help="Generate ChangeLog from github repo changelog.")
+    changelogs_parser = subparsers.add_parser("changelog", help="Generate ChangeLog from github repo changelog.")
+
+    # Komenda deb Generowanie Pliku
+    deb_parser = subparsers.add_parser("deb", help="Generate Debian File Installer.")
+    deb_parser.add_argument("plugin_name", help="Nazwa pluginu (np. myplugin).")
 
     args = parser.parse_args()
 
@@ -466,5 +468,7 @@ if __name__ == "__main__":
         generate_changelog(args.plugin_name)
     elif args.command == "changelog":
         generate_debian_changelog()
+    elif args.command == "deb":
+        create_binary_debian.build_deb_package(f"openmediavault-{args.plugin_name}",".")
     else:
         parser.print_help()
