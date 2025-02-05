@@ -9,4 +9,5 @@ Or use Binary file
 ```sh
 dist/generate_plugin create myplugins services --config example1:1 port:90 name:Text,
 dist/generate_plugin changelog  # if you have github repo
+dist/generate_plugin deb PLUGINNAME # Generate a debian file .deb
 ```
